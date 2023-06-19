@@ -1,0 +1,80 @@
+@charset "UTF-8";
+
+/* body {
+	max-width: 1340px;
+	display: block;
+    margin: 15px;
+} */
+
+/* h1, h2, form {
+	border : 1px solid red;
+} */
+
+table {
+	margin-left: 15px
+}
+
+td {
+	padding-left: 7px;
+	border-bottom: 1px solid gray;
+	padding-bottom: 3px;
+}
+
+
+.title {
+	text-align: right;
+    background: #F9F5EB;
+    font-weight: bolder;
+    padding-right: 7px;
+    border-right: 1px solid gray;
+}
+
+.birth {
+	width : 70px;
+}
+
+.hp {
+	width : 70px;
+}
+
+.addr {
+	width : 380px;
+}
+
+.addrTitle {
+	width : 80px;
+	background: #F8F6F4;
+	text-align : right;
+}
+
+.submit {
+    width: 115px;
+    height: 29px;
+    background: #94AF9F;
+    border: 1px solid gray;
+    color: white;
+    font-size: 16px;
+    margin-top: 5px;
+    margin-left : 17px;
+    float: left;
+}
+
+#delete {
+	width: 115px;
+    height: 29px;
+    float: right;
+    margin-top: 5px;
+    background: #F5EBEB;
+    border: 0;
+    font-size: 16px;
+    border: 1px solid gray;
+}
+
+.top {
+    background: #7D9D9C;
+    color: white;
+    border: 1px solid gray;
+    font-size: 15px;
+    padding: 4px;
+    border-radius: 8px;
+}
