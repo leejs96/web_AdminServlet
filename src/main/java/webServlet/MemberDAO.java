@@ -19,11 +19,12 @@ public class MemberDAO {
 	private Connection con;
 	private ResultSet rs = null;
 	private boolean login = false;
+	private String user_name = "";
+	private boolean check = false;
 
 	private DataSource dataFactory;
 	
 	public MemberDAO() {
-
 		try {
 			Context ctx = new InitialContext();
 			Context envContext = (Context) ctx.lookup("java:/comp/env");
@@ -41,12 +42,27 @@ public class MemberDAO {
 	public void setLogin(boolean login) {
 		this.login = login;
 	}
+	
+	public String getUser_name() {
+		return user_name;
+	}
 
+	public void setUser_name(String user_name) {
+		this.user_name = user_name;
+	}
+	
+	public boolean isCheck() {
+		return check;
+	}
+
+	public void setCheck(boolean check) {
+		this.check = check;
+	}
+
+	// 전체 회원리스트
 	public List<MemberVO> listMembers() {
 		List<MemberVO> list = new ArrayList<MemberVO>();
 		try {
-			/* connDB(); */
-			
 			con = dataFactory.getConnection();
 			
 			String sql = "SELECT * FROM shopping_member INNER JOIN dept ON shopping_member.dept_No = dept.dept_No ORDER BY member_name ASC";
@@ -110,10 +126,118 @@ public class MemberDAO {
 		}
 		return list;
 	}
+	
+	// 검색된 회원리스트
+	public List<MemberVO> listMembers(String opt, String search_word, String male, String female, String SMSY, String SMSN, String emailY, String emailN, String joindate1, String joindate2) {
+		List<MemberVO> list = new ArrayList<MemberVO>();
+		try {
+			con = dataFactory.getConnection();
+			
+			String sql = "SELECT * FROM shopping_member INNER JOIN dept ON shopping_member.dept_No = dept.dept_No WHERE 1=1 ";
 
+			if(!opt.equals("1")){
+				if(opt.equals("dept_Name")) {
+					sql += "and " + opt + " like '%" + search_word + "%'";
+				} else {
+					sql += "and " + opt + " like '%" + search_word + "%'";
+				}
+			}
+			
+			if(male.equals("male") && female.equals("female")){
+				sql += "and (member_gender = '" + male + "'" +  "or member_gender = '" + female + "')";
+			}else if(male.equals("male")){
+				sql += "and member_gender = '" + male + "'";
+			}else if(female.equals("female") ){
+				sql += "and member_gender = '" + female + "'";
+			}
+			
+			if(SMSY.equals("Y") && SMSN.equals("N")){
+				sql += "and (SMS_YN = 'Y' or SMS_YN = 'N')";
+			}else if(SMSY.equals("Y")){
+				sql += "and SMS_YN = 'Y'";
+			}else if(SMSN.equals("N")){
+				sql += "and SMS_YN = 'N'";
+			}else{
+			}
+	
+			if(emailY.equals("Y") && emailN.equals("N")){
+				sql += "and (emailsts_YN = 'Y' or emailsts_YN = 'N')";
+			}else if(emailY.equals("Y")){
+				sql += "and emailsts_YN = 'Y'";
+			}else if(emailN.equals("N")){
+				sql += "and emailsts_YN = 'N'";
+			}else{
+			}
+			
+			if(!(joindate1.equals("") && joindate2.equals(""))){
+				sql += "and joindate between '" + joindate1 + "' and '" + joindate2 + "'";
+			}else{
+			}
+			
+			sql += " ORDER BY member_name ASC";
+			
+			System.out.println("preparedStatement : " + sql);
+			pstmt = con.prepareStatement(sql);
+			rs = pstmt.executeQuery(sql);
+			while (rs.next()) {
+				String member_id = rs.getString("member_id");
+				String pw = rs.getString("member_pw");
+				String name = rs.getString("member_name");
+				String dept_Name = rs.getString("dept_Name");
+				String gender = rs.getString("member_gender");
+				String birth_y = rs.getString("member_birth_y");
+				String birth_m = rs.getString("member_birth_m");
+				String birth_d = rs.getString("member_birth_d");
+				String birth_gn = rs.getString("member_birth_gn");
+				String HP1 = rs.getString("HP1");
+				String HP2 = rs.getString("HP2");
+				String HP3 = rs.getString("HP3");
+				String SMS_YN = rs.getString("SMS_YN");
+				String email1 = rs.getString("email1");
+				String email2 = rs.getString("email2");
+				String emailsts_YN = rs.getString("emailsts_YN");
+				String DBzipcode = rs.getString("zipcode");
+				String DBjibun_addr = rs.getString("jibun_addr");
+				String DBroad_addr = rs.getString("road_addr");
+				String DBrest_addr = rs.getString("rest_addr");
+				Date joindate = rs.getDate("joindate");
+
+				MemberVO vo = new MemberVO();
+				vo.setMember_id(member_id);
+				vo.setMember_pw(pw);
+				vo.setMember_name(name);
+				vo.setDept_Name(dept_Name);
+				vo.setMember_gender(gender);
+				vo.setMember_birth_y(birth_y);
+				vo.setMember_birth_m(birth_m);
+				vo.setMember_birth_d(birth_d);
+				vo.setMember_birth_SL(birth_gn);
+				vo.setHP1(HP1);
+				vo.setHP2(HP2);
+				vo.setHP3(HP3);
+				vo.setSMS_YN(SMS_YN);
+				vo.setEmail1(email1);
+				vo.setEmail2(email2);
+				vo.setEmailsts_YN(emailsts_YN);
+				vo.setZipcode(DBzipcode);
+				vo.setJibun_addr(DBjibun_addr);
+				vo.setRoad_addr(DBroad_addr);
+				vo.setRest_addr(DBrest_addr);
+				vo.setJoindate(joindate);
+				list.add(vo);
+			}
+
+			rs.close();
+			pstmt.close();
+			con.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
+	
 	public void joinMember(MemberVO memberVO) {
 		try {
-			/* connDB(); */
 			con = dataFactory.getConnection();
 
 			String id = memberVO.getMember_id();
@@ -174,16 +298,17 @@ public class MemberDAO {
 
 	public void login(String id, String pw) {
 		try {
-			/* connDB(); */
+			MemberVO vo = new MemberVO();
 			con = dataFactory.getConnection();
 			
-			String sql = "SELECT * FROM shopping_member" + " WHERE member_id = '" + id + "' AND member_pw = '" + pw
-					+ "'";
+			String sql = "SELECT * FROM shopping_member" + " WHERE member_id = '" + id + "' AND member_pw = '" + pw + "'";
 			System.out.println("prepareStatement : " + sql);
 			pstmt = con.prepareStatement(sql);
 			rs = pstmt.executeQuery(sql);
 
 			if (rs.next()) {
+				String name = rs.getString("member_Name");
+				setUser_name(name);
 				setLogin(true);
 			}
 			rs.close();
@@ -196,7 +321,6 @@ public class MemberDAO {
 
 	public void delMember(String id) {
 		try {
-			/* connDB(); */
 			con = dataFactory.getConnection();
 			
 			String sql = "delete from shopping_member" + " where member_id=?";
@@ -210,17 +334,30 @@ public class MemberDAO {
 		}
 	}
 
-	/*
-	 * private void connDB() { try { String dbURL =
-	 * "jdbc:mysql://localhost:3306/shoppingmall?serverTimezone=UTC"; String dbID =
-	 * "root"; String dbPassword = "!";
-	 * 
-	 * Class.forName("com.mysql.jdbc.Driver");
-	 * 
-	 * con = DriverManager.getConnection(dbURL, dbID, dbPassword); stmt =
-	 * con.createStatement();
-	 * 
-	 * System.out.println("Mysql Connected"); } catch (Exception e) {
-	 * e.printStackTrace(); } }
-	 */
+	public void checkID(String id) {
+		try {
+			int cnt = 0;
+			con = dataFactory.getConnection();
+			
+			String sql = "SELECT count(*) as cnt FROM shopping_member" + " WHERE member_id = '" + id + "'";
+			System.out.println("prepareStatement : " + sql);
+			pstmt = con.prepareStatement(sql);
+			rs = pstmt.executeQuery(sql);
+
+			if (rs.next()) {
+				cnt = rs.getInt("cnt");
+			}
+			
+			if (cnt == 0) {
+				setCheck(true);
+			} else {
+				setCheck(false);
+			}
+			rs.close();
+			pstmt.close();
+			con.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 }

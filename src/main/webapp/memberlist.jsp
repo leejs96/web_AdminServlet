@@ -1,22 +1,34 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+    pageEncoding="UTF-8"
+	import = "java.util.Date, webServlet.*, java.util.List"    
+%>
 <!DOCTYPE html>
 <html>
 	<head>
 		<meta charset="UTF-8">
 		<title>회원리스트</title>
-		<%@ include file="./script/dbconn.jsp" %>
 		<%@ include file="./script/nav_admin.jsp" %>
 		
 		<link rel="stylesheet" href = "./css/nav.css">
 		<link rel="stylesheet" href = "./css/mem_list.css">
+		
+		<script>
+			function validateForm() { // 검색어는 입력하고 항목은 선택 안한 경우 항목을 선택하게하는 함수 다시 만들기!!
+				var opt = document.SearchForm.opt.value;
+				var search_word = document.SearchForm.search_word.value;
+				
+				if(opt.equals("1") && search_word.length > 0) {
+					return false;
+				} else {return true;}
+			}
+		</script>
 	</head>
 	
 	<body>
 	
 		<div class = "wrap">
 			<h1>회원관리</h1>
-			<form name="SearchForm" action=memberlist_search.jsp method=get style = "margin : 5px; border : 1px solid;">
+			<form name="SearchForm" action=member method=get style = "margin : 5px; border : 1px solid;" onSubmit="return validateForm();">
 					<h2 style = "margin-left: 15px; margin-bottom: 10px;">검색조건</h2>
 					<div style = "margin-left: 28px;">
 						<select name = "opt" id = "opt">
@@ -28,7 +40,8 @@
 							<option value = "jibun_addr">지번주소</option>
 							<option value = "road_addr">도로명주소</option>
 						</select>
-						<input type = "search" name = "search" style = "height : 25px;">
+						<input type = "search" name = "search_word" style = "height : 25px;">
+						<input type = "hidden" name = "command" value = "search">
 						<input type = "submit" id = "submit" value = "검색">
 					</div>
 				<table id = "search_con">
@@ -63,11 +76,10 @@
 				</table>
 			</form>
 			<div style = "margin-top: 20px;">
-				<button onclick = "window.location.reload()">전체 리스트보기</button>
+				<button onclick = "location = 'member?command=MemList'">전체 리스트보기</button>
 			</div>
 			<table border = "1" id = "list">
 				<tr style = "background: #94AF9F">
-					<td>No</td>
 					<td>ID</td>
 					<td>이름</td>
 					<td>부서명</td>
@@ -86,66 +98,47 @@
 					<td>회원삭제</td>
 				</tr>
 				
-				<%-- <%
-				int i = 1;
-				PreparedStatement pstmt = null;
-				ResultSet rs = null;
-				
-				String sql = "SELECT * FROM shopping_member INNER JOIN dept ON shopping_member.dept_No = dept.dept_No ORDER BY member_name ASC";
-				pstmt = conn.prepareStatement(sql);
-			
-				// 4) 실행
-				rs = pstmt.executeQuery();
-			
-				// 5) 결과를 테이블에 출력
-				while (rs.next()) {
-					String member_id = rs.getString("member_id");
-					String name = rs.getString("member_name");
-					String dept_Name = rs.getString("dept_Name");
-					String gender = rs.getString("member_gender");
-					String birth_y = rs.getString("member_birth_y");
-					String birth_m = rs.getString("member_birth_m");
-					String birth_d = rs.getString("member_birth_d");
-					String birth_gn = rs.getString("member_birth_gn");
-					String HP1 = rs.getString("HP1");
-					String HP2 = rs.getString("HP2");
-					String HP3 = rs.getString("HP3");
-					String SMS_YN = rs.getString("SMS_YN");
-					String email1 = rs.getString("email1");
-					String email2 = rs.getString("email2");
-					String emailsts_YN = rs.getString("emailsts_YN");
-					String DBzipcode = rs.getString("zipcode");
-					String DBjibun_addr = rs.getString("jibun_addr");
-					String DBroad_addr = rs.getString("road_addr");
-					String DBrest_addr = rs.getString("rest_addr");
-					String joindate = rs.getString("joindate");
-					
-					
+				<% 
+					List<MemberVO> list = (List<MemberVO>) request.getAttribute("memberList");
+					for(int i = 0; i<list.size(); i++) {
+						MemberVO vo = (MemberVO) list.get(i);
+						String member_id = vo.getMember_id();
+						String name = vo.getMember_name();
+						String dept = vo.getDept_Name();
+						String gender = vo.getMember_gender();
+						String birth = vo.getMember_birth_y() + "/" + vo.getMember_birth_m() + "/" + vo.getMember_birth_d() + "(" + vo.getMember_birth_SL() + ")";
+						String hp = vo.getHP1() + "-" + vo.getHP2() + "-" + vo.getHP3();
+						String sms = vo.getSMS_YN();
+						String email = vo.getEmail1() + "@" + vo.getEmail2();
+						String emailYN = vo.getEmailsts_YN();
+						String zipcode = vo.getZipcode();
+						String jibun_addr = vo.getJibun_addr();
+						String road_addr = vo.getRoad_addr();
+						String rest_addr = vo.getRest_addr();
+						Date joinDate = vo.getJoindate();
 				%>
 				<tr>
-					<td><%=i%></td>
 					<td><%=member_id%></td>
 					<td><%=name %></td>
-					<td><%=dept_Name %></td>
+					<td><%=dept %></td>
 					<td><%=gender %></td>
-					<td><%=birth_y%>/<%=birth_m%>/<%=birth_d%>(<%=birth_gn%>)</td>
-					<td><%=HP1%>-<%=HP2%>-<%=HP3%></td>
-					<td><%=SMS_YN%></td>
-					<td><%=email1%>@<%=email2%></td>
-					<td><%=emailsts_YN%></td>
-					<td><%=DBzipcode%></td>
-					<td><%=DBjibun_addr%></td>
-					<td><%=DBroad_addr%></td>
-					<td><%=DBrest_addr%></td>
-					<td><%=joindate%></td>
+					<td><%=birth%></td>
+					<td><%=hp%></td>
+					<td><%=sms%></td>
+					<td><%=email%></td>
+					<td><%=emailYN%></td>
+					<td><%=zipcode%></td>
+					<td><%=jibun_addr%></td>
+					<td><%=road_addr%></td>
+					<td><%=rest_addr%></td>
+					<td><%=joinDate%></td>
 					<td><button id = <%=member_id%> onclick = "mem_update(this.id);">수정</button></td>
 					<td><button id = <%=member_id%> onclick = "mem_delete(this.id);">삭제</button></td>
 				</tr>
 				
 			<%
-				i++;
 				}
-			%> --%>
+			%>
 			</table>
 		</div>
 	</body>

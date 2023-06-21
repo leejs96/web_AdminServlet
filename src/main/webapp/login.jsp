@@ -47,16 +47,4 @@
 			return false;
 		}
 	}
-	
-	function manage() {
-		var manage_code = "0000";
-		var manage_num = document.getElementById("manage_num").value;
-		if(manage_num==manage_code) {
-			/* window.location.href="./memberlist.jsp"; */
-			location.href="main.jsp?manage=" + manage_code;
-		} else {
-			alert("관리자번호를 입력하세요.");
-			return false;
-		}
-	}
 </script>

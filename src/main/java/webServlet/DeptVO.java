@@ -3,8 +3,15 @@ package webServlet;
 public class DeptVO {
 	private String dept_No;
 	private String dept_Name;
+	private int cntPdept;
 	
 	
+	public int getCntPdept() {
+		return cntPdept;
+	}
+	public void setCntPdept(int cntPdept) {
+		this.cntPdept = cntPdept;
+	}
 	public String getDept_No() {
 		return dept_No;
 	}

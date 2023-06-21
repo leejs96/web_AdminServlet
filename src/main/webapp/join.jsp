@@ -1,5 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+    pageEncoding="UTF-8"
+	import = "webServlet.*"        
+%>
 <!DOCTYPE html>
 <html>
 	<head>
@@ -14,17 +16,14 @@
 		<link rel="stylesheet" href = "./css/nav.css">
 		<link rel="stylesheet" href = "./css/member.css">
 		
-		<!-- <script>
+		<script>
 			function id_doublecheck(){ // 아이디 중복확인 만들기부터 시작
 				var frmJoin = document.Registform;
 				var user_id = frmJoin.user_id.value;
-			
-				frmJoin.method = "get";
-				frmJoin.action = "id_check.jsp";
-				frmJoin.submit();
+				location.href="member?command=checkID&user_id=" + user_id;
 				
 			}
-		</script> -->
+		</script>
 		
 		<script>
 			function check_id(user_id) { // 아이디 체크
@@ -167,6 +166,16 @@
 				}
 			}
 
+			function dbcheck_id(dbcheck) {
+				if(dbcheck=="yes") {
+					return true;
+				} else if (dbcheck=="no"){
+					alert("아이디 중복확인을 해주세요.");
+					return false;
+				}
+				
+			}
+			
 			function validateForm() {
 				console.log('확인');
 		    	
@@ -190,9 +199,9 @@
 		    	var addr2 = document.Registform.jibun_addr.value;
 		    	var addr3 = document.Registform.road_addr.value;
 		    	
-		    	/* if (dbcheck_id(dbcheck))
-		    	{ */
-			    	if (check_id(user_id)) 
+		    	if (check_id(user_id)) 
+		    	{
+			    	if (dbcheck_id(dbcheck))
 			    	{
 			    		if(check_pw(pw1, pw2))
 			    		{
@@ -245,17 +254,25 @@
 				    	{
 				    		return false;
 				    	}
-		    	/* }else
+		    	}else
 		    	{
 		    		return false;
-		    	} */
+		    	}
     		}
 			
     	</script>
 	</head>
 	
 	<body>
-	
+		<script>
+			<% 
+				String checked_id = request.getParameter("user_id");
+				if(checked_id == null) {
+					checked_id = "";
+				}
+				String checked_use = request.getParameter("check");
+			%>
+		</script>
 		<div class = "wrap" style = "width: 615px;">
 			<h1>회원가입</h1>
 			<form name="Registform" action="member" method=post onSubmit="return validateForm();">
@@ -263,9 +280,28 @@
 					<tr>
 						<td class = "title" >아이디</td>
 						<td colspan = "2">
-							<input type = "text" name=user_id id=user_id>
-							<button type = "button">중복확인</button>
-							<input type="hidden" name="dbcheck">
+							<input type = "text" name=user_id id=user_id value = '<%=checked_id%>' onchange = "check_reset();">
+							<input type = "button" onclick = "id_doublecheck();" value = "중복확인">
+						<%
+							String check = request.getParameter("check");
+							if(check != null) {
+								if(check.equals("able")) {
+						%>
+									<span>사용가능</span>
+									<input type="hidden" name="dbcheck" value = "yes">
+						<%
+								} else if(check.equals("disable")) {
+						%>
+									<span>사용불가능</span>
+									<input type="hidden" name="dbcheck" value = "no">
+						<%
+								}
+							} else {
+						%>
+									<input type="hidden" name="dbcheck" value = "no">
+						<%
+							}
+						%>
 						</td>
 					</tr>
 					<tr>
@@ -399,5 +435,9 @@
 		} else {
 			document.Registform.user_email2.value = document.Registform.select_email.value;
 		}
+	}
+	
+	function check_reset()() {
+		document.Registform.dbcheck.value = false;
 	}
 </script>
