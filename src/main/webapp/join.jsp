@@ -18,10 +18,8 @@
 		
 		<script>
 			function id_doublecheck(){ // 아이디 중복확인 만들기부터 시작
-				var frmJoin = document.Registform;
-				var user_id = frmJoin.user_id.value;
-				location.href="member?command=checkID&user_id=" + user_id;
-				
+				var user_id = document.Registform.user_id.value;
+				var openWin = window.open("http://localhost:8060/web_AdminServlet/check_id.jsp?user_id=" + user_id + "", "name(about:blank)", "width=300, height=300");
 			}
 		</script>
 		
@@ -167,9 +165,9 @@
 			}
 
 			function dbcheck_id(dbcheck) {
-				if(dbcheck=="yes") {
+				if(dbcheck=="able") {
 					return true;
-				} else if (dbcheck=="no"){
+				} else if (dbcheck=="disable"){
 					alert("아이디 중복확인을 해주세요.");
 					return false;
 				}
@@ -179,7 +177,7 @@
 			function validateForm() {
 				console.log('확인');
 		    	
-		    	var dbcheck = document.Registform.dbcheck.value;
+		    	var dbcheck = document.Registform.checked.value;
 		    	var user_id = document.Registform.user_id.value;
 		    	var pw1 = document.Registform.user_pw.value;
 		    	var pw2 = document.Registform.user_pw_ch.value;
@@ -273,52 +271,36 @@
 				String checked_use = request.getParameter("check");
 			%>
 		</script>
-		<div class = "wrap" style = "width: 615px;">
+		<div class = "wrap" style = "width: 670px;">
 			<h1>회원가입</h1>
-			<form name="Registform" action="member" method=post onSubmit="return validateForm();">
-				<table id = "joinT">
+			<form name="Registform" action="member" method=post onSubmit="return validateForm();" enctype="multipart/form-data">
+				<table id = "joinT" border = 1>
 					<tr>
 						<td class = "title" >아이디</td>
-						<td colspan = "2">
-							<input type = "text" name=user_id id=user_id value = '<%=checked_id%>' onchange = "check_reset();">
+						<td colspan = "3">
+							<input type = "text" name=user_id id=user_id>
 							<input type = "button" onclick = "id_doublecheck();" value = "중복확인">
-						<%
-							String check = request.getParameter("check");
-							if(check != null) {
-								if(check.equals("able")) {
-						%>
-									<span>사용가능</span>
-									<input type="hidden" name="dbcheck" value = "yes">
-						<%
-								} else if(check.equals("disable")) {
-						%>
-									<span>사용불가능</span>
-									<input type="hidden" name="dbcheck" value = "no">
-						<%
-								}
-							} else {
-						%>
-									<input type="hidden" name="dbcheck" value = "no">
-						<%
-							}
-						%>
+							<input type = hidden name = "checked" id = "checked" value = "disable">
+						</td>
+						<td rowspan=5>
+							<input type = file name = "picture">
 						</td>
 					</tr>
 					<tr>
 						<td class = "title">비밀번호</td> 
-						<td colspan = "2"><input type = "password" name=user_pw id=user_pw value = "1111"></td>
+						<td colspan = "3"><input type = "password" name=user_pw id=user_pw value = "1111"></td>
 					</tr>
 					<tr>
 						<td class = "title">비밀번호 확인</td>
-						<td colspan = "2"><input type = "password" name=user_pw_ch id=user_pw_ch value = "1111"></td>
+						<td colspan = "3"><input type = "password" name=user_pw_ch id=user_pw_ch value = "1111"></td>
 					</tr>
 					<tr>
 						<td class = "title">이름</td>
-						<td colspan = "2"><input type = "text" name=user_name id=user_name></td>
+						<td colspan = "3"><input type = "text" name=user_name id=user_name></td>
 					</tr>
 					<tr>
 						<td class = "title">부서명</td>
-						<td colspan = "2">
+						<td colspan = "3">
 							<select name = "dept_No">
 								<option value = "1">선택</option>
 								<option value = "10">인사팀</option>
@@ -346,14 +328,14 @@
 					</tr>
 					<tr>
 						<td class = "title">성별</td>
-						<td colspan = "2">
+						<td colspan = "4">
 							<input type = "radio" name = "gender" value = "male">남자
 							<input type = "radio" name = "gender" value = "female">여자
 						</td>
 					</tr>
 					<tr>
 						<td class = "title">법정생년월일</td>
-						<td colspan = "2">
+						<td colspan = "4">
 							<input type = "text" name=user_birth_y id=user_birth_y class = "birth" value = "1996">/<input type = "text" name=user_birth_m id=user_birth_m class = "birth" value = "01">/<input type = "text" name=user_birth_d id=user_birth_d class = "birth" value = "01">
 							<input type = "radio" name = "birth_SL" value = "양" checked>양력
 							<input type = "radio" name = "birth_SL" value = "음">음력
@@ -361,19 +343,19 @@
 					</tr>
 					<tr>
 						<td rowspan = "2" class = "title">휴대폰번호</td> 
-						<td colspan = "2" class = "hp" style = "border: 0; padding-bottom: 0;">
+						<td colspan = "4" class = "hp" style = "border: 0; padding-bottom: 0;">
 							<input type = "text" name=user_hp1 class = "hp" id=user_hp1 value = "010">-<input type = "text" name=user_hp2  class = "hp" id=user_hp2 value = "1111">-<input type = "text" name=user_hp3  class = "hp" id=user_hp3 value = "1111">
 						</td>
 					</tr>
 					<tr>
-						<td colspan = "2">
+						<td colspan = "4">
 							<input type = "checkbox" name = "sms" value = "Y" id = "sms">
 							쇼핑몰에서 발송하는 SMS 소식을 수신합니다.
 						</td>
 					</tr>
 					<tr>
 						<td rowspan = "2" class = "title">이메일(e-mail)</td>
-						<td colspan = "2" style = "border: 0; padding-bottom: 0;">
+						<td colspan = "4" style = "border: 0; padding-bottom: 0;">
 							<input type = "text" name=user_email1 id=user_email1 value = "aaa">@<input type = "text" name=user_email2 id=user_email2 value="naver.com">
 							<select name = "select_email" onchange="selectEmail();">
 								<option value = "1">직접입력 </option>
@@ -384,7 +366,7 @@
 						</td>
 					</tr>
 					<tr>
-						<td colspan = "2">
+						<td colspan = "4">
 							<input type = "checkbox" name = "emailsts" value = "Y" id = "emailsts">
 							쇼핑몰에서 발송하는 e-mail을 수신합니다.
 						</td>
@@ -392,26 +374,26 @@
 					<tr>
 						<td rowspan = "8" class = "title">주소</td>
 						<td class = "addrTitle">우편번호</td>
-						<td class = "addr">
+						<td class = "addr" colspan=3>
 							<input type = "text" name=zipcode id = zipcode value = "13536">
 							<input type="button" onclick="execDaumPostcode()" value="우편번호 찾기">
 						</td>
 					</tr>
 					<tr>
 						<td class = "addrTitle">지번주소</td>
-						<td class = "addr">
+						<td class = "addr" colspan=3>
 							<input type = "text" name=jibun_addr id = jibun_addr style = "width: 85%;">
 						</td>
 					</tr>
 					<tr>
 						<td class = "addrTitle">도로명주소</td>
-						<td class = "addr">
+						<td class = "addr" colspan=3>
 							<input type = "text" name=road_addr id = road_addr value = "경기 성남시 분당구 판교역로10번길 3" style = "width: 85%;">
 						</td>
 					</tr>
 					<tr>
 						<td class = "addrTitle">나머지주소</td>
-						<td class = "addr">
+						<td class = "addr" colspan=3>
 							<input type = "text" name=rest_addr style = "width: 85%;">
 						</td>
 					</tr>
@@ -437,7 +419,7 @@
 		}
 	}
 	
-	function check_reset()() {
+	function check_reset() {
 		document.Registform.dbcheck.value = false;
 	}
 </script>

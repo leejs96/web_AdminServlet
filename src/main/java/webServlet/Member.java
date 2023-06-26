@@ -1,5 +1,6 @@
 package webServlet;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
@@ -16,6 +17,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 /**
  * Servlet implementation class MemberList
@@ -86,7 +91,6 @@ public class Member extends HttpServlet {
 			dispatch.forward(request, response);
 		
 		} else if(command != null && command.equals("checkID")) {
-			ServletContext context = getServletContext();
 			String user_id = request.getParameter("user_id");
 			System.out.println(user_id);
 			dao.checkID(user_id);
@@ -94,14 +98,23 @@ public class Member extends HttpServlet {
 			if(dao.isCheck()) {
 				out.print("<html><body>");
 				out.print("<script>"
-						+ "window.location.href='./join.jsp?user_id=" + user_id + "&check=able" + "';</script>");
+						+ "window.location.href='./check_id.jsp?user_id=" + user_id + "&check=able" + "';</script>");
 				out.print("</body></html>");
 			} else {
 				out.print("<html><body>");
 				out.print("<script>"
-						+ "window.location.href='./join.jsp?user_id=" + user_id + "&check=disable" + "';</script>");
+						+ "window.location.href='./check_id.jsp?user_id=" + user_id + "&check=disable" + "';</script>");
 				out.print("</body></html>");
 			}
+		} else if (command != null && command.equals("MyInfo")) {
+			String user_id = (String)request.getSession().getAttribute("userID");
+			List<MemberVO> list = dao.info(user_id);
+			request.setAttribute("memberList", list);
+			DeptDAO deptDAO = new DeptDAO();
+			List<DeptVO> deptList = deptDAO.listdept();
+			request.setAttribute("deptList", deptList);
+			RequestDispatcher dispatch = request.getRequestDispatcher("my_info.jsp");
+			dispatch.forward(request, response);
 		}
 	}
 
@@ -119,6 +132,9 @@ public class Member extends HttpServlet {
 		String command = request.getParameter("command");
 		
 		if (command != null && command.equals("addMember")) {
+//			Map<String, String> photoMap = upload(request, response);
+//			String imgFileName = photoMap.get("imageFileName");
+			
 			String user_id = request.getParameter("user_id");
 			String user_pw = request.getParameter("user_pw");
 			String user_name = request.getParameter("user_name");
@@ -132,6 +148,7 @@ public class Member extends HttpServlet {
 			String user_hp2 = request.getParameter("user_hp2");
 			String user_hp3 = request.getParameter("user_hp3");
 			String sms = request.getParameter("sms");
+			
 			if (sms != "Y") {
 				sms = "N";
 			}
@@ -167,6 +184,7 @@ public class Member extends HttpServlet {
 			vo.setJibun_addr(jibun_addr);
 			vo.setRoad_addr(road_addr);
 			vo.setRest_addr(rest_addr);
+			vo.setImgFileName(imgFileName);
 
 			dao.joinMember(vo);
 			out.print("<html><body>");
@@ -190,14 +208,16 @@ public class Member extends HttpServlet {
 					out.print("</body></html>");
 				} else {
 					dao.login(user_id, user_pw);
-					if (dao.isLogin() == true) {
+					if (dao.isLogin()) {
 						String user_name = dao.getUser_name();
 						session.setAttribute("userID", user_id);
 						session.setAttribute("userName", user_name);
 						LoginImpl loginUser = new LoginImpl(user_id, user_pw);
-						if(session.isNew()) {
-							session.setAttribute("loginUser", loginUser);
-						}
+						/*
+						 * if(session.isNew()) { session.setAttribute("loginUser", loginUser); } int
+						 * total = LoginImpl.total_user; // p.379 request.setAttribute("totalUser",
+						 * total);
+						 */
 						out.print("<html><body>");
 						out.print("<script>"
 								+ "window.location.href='./main.jsp'</script>"
@@ -215,4 +235,41 @@ public class Member extends HttpServlet {
 		} 
 	}
 	
+//	private Map<String, String> upload(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+//		Map<String, String> photoMap = new HashMap<String, String>();
+//		String encoding = "utf-8";
+//		File currentDirPath = new File("C:\\ThisIsJava\\workspace\\fileupload\\src\\main\\webapp\\resource\\img");
+//		DiskFileItemFactory factory = new DiskFileItemFactory();
+//		factory.setRepository(currentDirPath);
+//		factory.setSizeThreshold(1024 * 1024);
+//		
+//		ServletFileUpload upload = new ServletFileUpload(factory);
+//		try {
+//			List items = upload.parseRequest(request);
+//			for (int i = 0; i < items.size(); i++) {
+//				FileItem fileItem = (FileItem) items.get(i);
+//
+//				if (fileItem.isFormField()) {
+//					System.out.println(fileItem.getFieldName() + "=" + fileItem.getString(encoding));
+//				} else {
+//					System.out.println("파라미터명:" + fileItem.getFieldName());
+//					System.out.println("파일명:" + fileItem.getName());
+//					System.out.println("파일크기:" + fileItem.getSize() + "bytes");
+//
+//					if (fileItem.getSize() > 0) {
+//						int idx = fileItem.getName().lastIndexOf("\\");
+//						if (idx == -1) {
+//							idx = fileItem.getName().lastIndexOf("/");
+//						}
+//						String fileName = fileItem.getName().substring(idx + 1);
+//						File uploadFile = new File(currentDirPath + "\\" + fileName);
+//						fileItem.write(uploadFile);
+//					} // end if
+//				} // end if
+//			} // end for
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//		return photoMap;
+//	}
 }

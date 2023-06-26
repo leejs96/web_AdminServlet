@@ -23,5 +23,13 @@
 		<p><%=user_name %>(<%=user_id %>)님 안녕하세요!</p>
 	<%}%>
 	
+	<table border=1>
+		<tr><td>아이디</td><td><input type = text></td><td rowspan=5><input type = text value = "Hello"></td></tr>
+		<tr><td>비밀번호</td><td><input type = text></td></tr>
+		<tr><td>비밀번호확인</td><td><input type = text></td></tr>
+		<tr><td>이름</td><td><input type = text></td></tr>
+		<tr><td>부서</td><td><input type = text></td></tr>
+	</table>
+	
 </body>
 </html>

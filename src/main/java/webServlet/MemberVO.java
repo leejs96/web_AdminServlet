@@ -25,8 +25,10 @@ public class MemberVO {
 	private String rest_addr;
 	private Date joindate;
 	private String dept_Name;
+	private String imgFileName;
 	
 	public MemberVO() {}
+	
 
 	public String getMember_id() {
 		return member_id;
@@ -204,5 +206,14 @@ public class MemberVO {
 		this.dept_Name = dept_Name;
 	}
 
+
+	/*
+	 * public String getImgFileName() { return imgFileName; }
+	 * 
+	 * 
+	 * public void setImgFileName(String imgFileName) { this.imgFileName =
+	 * imgFileName; }
+	 */
+	
 	
 }

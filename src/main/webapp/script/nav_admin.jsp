@@ -36,7 +36,7 @@
 					} else {
 				%>
 						<li class = "menu"><a href = "member?command=logout">로그아웃</a></li>
-						<li class = "menu" style = "padding-right: 10px;"><a href = "my_info.jsp">마이페이지</a></li>
+						<li class = "menu" style = "padding-right: 10px;"><a href = "member?command=MyInfo">마이페이지</a></li>
 				<%
 					}
 				%>

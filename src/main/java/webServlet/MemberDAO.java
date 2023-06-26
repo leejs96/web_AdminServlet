@@ -260,6 +260,7 @@ public class MemberDAO {
 			String road_addr = memberVO.getRoad_addr();
 			String rest_addr = memberVO.getRest_addr();
 			String dept_No = memberVO.getDept_No();
+			/* String imgFileName = memberVO.getImgFileName(); */
 
 			String sql = "insert into shopping_member";
 			sql += " (member_id, member_pw, member_name, member_gender, member_birth_y, member_birth_m, member_birth_d, member_birth_gn, HP1, HP2, HP3, SMS_YN, email1, email2, emailsts_YN, zipcode, jibun_addr, road_addr, rest_addr, dept_No)";
@@ -287,6 +288,7 @@ public class MemberDAO {
 			pstmt.setString(18, road_addr);
 			pstmt.setString(19, rest_addr);
 			pstmt.setString(20, dept_No);
+			/* pstmt.setString(20, imgFileName); */
 
 			pstmt.executeUpdate();
 			pstmt.close();
@@ -359,5 +361,72 @@ public class MemberDAO {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public List<MemberVO> info(String id) {
+		List<MemberVO> list = new ArrayList<MemberVO>();
+		try {
+			con = dataFactory.getConnection();
+			
+			String sql = "SELECT * FROM shopping_member WHERE shopping_member.member_id = '" + id + "'";
+			System.out.println("preparedStatement : " + sql);
+
+			pstmt = con.prepareStatement(sql);
+			rs = pstmt.executeQuery(sql);
+			while (rs.next()) {
+				String member_id = rs.getString("member_id");
+				String pw = rs.getString("member_pw");
+				String name = rs.getString("member_name");
+				String dept_No = rs.getString("dept_No");
+				String gender = rs.getString("member_gender");
+				String birth_y = rs.getString("member_birth_y");
+				String birth_m = rs.getString("member_birth_m");
+				String birth_d = rs.getString("member_birth_d");
+				String birth_gn = rs.getString("member_birth_gn");
+				String HP1 = rs.getString("HP1");
+				String HP2 = rs.getString("HP2");
+				String HP3 = rs.getString("HP3");
+				String SMS_YN = rs.getString("SMS_YN");
+				String email1 = rs.getString("email1");
+				String email2 = rs.getString("email2");
+				String emailsts_YN = rs.getString("emailsts_YN");
+				String DBzipcode = rs.getString("zipcode");
+				String DBjibun_addr = rs.getString("jibun_addr");
+				String DBroad_addr = rs.getString("road_addr");
+				String DBrest_addr = rs.getString("rest_addr");
+				Date joindate = rs.getDate("joindate");
+
+				MemberVO vo = new MemberVO();
+				vo.setMember_id(member_id);
+				vo.setMember_pw(pw);
+				vo.setMember_name(name);
+				vo.setDept_No(dept_No);
+				vo.setMember_gender(gender);
+				vo.setMember_birth_y(birth_y);
+				vo.setMember_birth_m(birth_m);
+				vo.setMember_birth_d(birth_d);
+				vo.setMember_birth_SL(birth_gn);
+				vo.setHP1(HP1);
+				vo.setHP2(HP2);
+				vo.setHP3(HP3);
+				vo.setSMS_YN(SMS_YN);
+				vo.setEmail1(email1);
+				vo.setEmail2(email2);
+				vo.setEmailsts_YN(emailsts_YN);
+				vo.setZipcode(DBzipcode);
+				vo.setJibun_addr(DBjibun_addr);
+				vo.setRoad_addr(DBroad_addr);
+				vo.setRest_addr(DBrest_addr);
+				vo.setJoindate(joindate);
+				list.add(vo);
+			}
+			rs.close();
+			pstmt.close();
+			con.close();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return list;
 	}
 }
