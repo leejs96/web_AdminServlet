@@ -21,6 +21,7 @@ public class MemberDAO {
 	private boolean login = false;
 	private String user_name = "";
 	private boolean check = false;
+	private boolean pw = false;
 
 	private DataSource dataFactory;
 	
@@ -57,6 +58,14 @@ public class MemberDAO {
 
 	public void setCheck(boolean check) {
 		this.check = check;
+	}
+	
+	public boolean isPw() {
+		return pw;
+	}
+
+	public void setPw(boolean pw) {
+		this.pw = pw;
 	}
 
 	// 전체 회원리스트
@@ -288,7 +297,7 @@ public class MemberDAO {
 			pstmt.setString(18, road_addr);
 			pstmt.setString(19, rest_addr);
 			pstmt.setString(20, dept_No);
-			/* pstmt.setString(20, imgFileName); */
+			/* pstmt.setString(21, imgFileName); */
 
 			pstmt.executeUpdate();
 			pstmt.close();
@@ -300,7 +309,6 @@ public class MemberDAO {
 
 	public void login(String id, String pw) {
 		try {
-			MemberVO vo = new MemberVO();
 			con = dataFactory.getConnection();
 			
 			String sql = "SELECT * FROM shopping_member" + " WHERE member_id = '" + id + "' AND member_pw = '" + pw + "'";
@@ -428,5 +436,91 @@ public class MemberDAO {
 			e.printStackTrace();
 		}
 		return list;
+	}
+	
+	public void update(String id, MemberVO memberVO) {
+		try {
+			con = dataFactory.getConnection();
+
+			String name = memberVO.getMember_name();
+			String birth_y = memberVO.getMember_birth_y();
+			String birth_m = memberVO.getMember_birth_m();
+			String birth_d = memberVO.getMember_birth_d();
+			String birth_SL = memberVO.getMember_birth_SL();
+			String hp1 = memberVO.getHP1();
+			String hp2 = memberVO.getHP2();
+			String hp3 = memberVO.getHP3();
+			String sms = memberVO.getSMS_YN();
+			String email1 = memberVO.getEmail1();
+			String email2 = memberVO.getEmail2();
+			String emailsts = memberVO.getEmailsts_YN();
+			String zipcode = memberVO.getZipcode();
+			String jibun_addr = memberVO.getJibun_addr();
+			String road_addr = memberVO.getRoad_addr();
+			String rest_addr = memberVO.getRest_addr();
+			String dept_No = memberVO.getDept_No();
+
+			String sql = "update shopping_member";
+			sql += " set member_name=?, member_birth_y=?, member_birth_m=?, member_birth_d=?, member_birth_gn=?, HP1=?, HP2=?, HP3=?, SMS_YN=?, email1=?, email2=?, emailsts_YN=?, zipcode=?, jibun_addr=?, road_addr=?, rest_addr=?, dept_No=?";
+			sql += " where member_id = ?";
+			System.out.println("prepareStatement : " + sql);
+
+			pstmt = con.prepareStatement(sql);
+			pstmt.setString(1, name);
+			pstmt.setString(2, birth_y);
+			pstmt.setString(3, birth_m);
+			pstmt.setString(4, birth_d);
+			pstmt.setString(5, birth_SL);
+			pstmt.setString(6, hp1);
+			pstmt.setString(7, hp2);
+			pstmt.setString(8, hp3);
+			pstmt.setString(9, sms);
+			pstmt.setString(10, email1);
+			pstmt.setString(11, email2);
+			pstmt.setString(12, emailsts);
+			pstmt.setString(13, zipcode);
+			pstmt.setString(14, jibun_addr);
+			pstmt.setString(15, road_addr);
+			pstmt.setString(16, rest_addr);
+			pstmt.setString(17, dept_No);
+			pstmt.setString(18, id);
+
+			pstmt.executeUpdate();
+			pstmt.close();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void pwupdate(String id, String origin_pw, String new_pw) {
+		try {
+			con = dataFactory.getConnection();
+
+			String sql = "SELECT member_pw FROM shopping_member WHERE member_id = '" + id + "'";
+			System.out.println("prepareStatement : " + sql);
+			pstmt = con.prepareStatement(sql);
+			// 4) 실행
+			rs = pstmt.executeQuery();
+			// 5) 결과를 테이블에 출력
+			if (rs.next()) {
+				String pw = rs.getString("member_pw");
+				if(pw.equals(origin_pw)) {
+					sql = "update shopping_member";
+					sql += " set member_pw=? where member_id = ?";
+					System.out.println("prepareStatement : " + sql);
+		
+					pstmt = con.prepareStatement(sql);
+					pstmt.setString(1, new_pw);
+					pstmt.setString(2, id);
+		
+					pstmt.executeUpdate();
+					pstmt.close();
+					setPw(true);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }

@@ -115,6 +115,16 @@ public class Member extends HttpServlet {
 			request.setAttribute("deptList", deptList);
 			RequestDispatcher dispatch = request.getRequestDispatcher("my_info.jsp");
 			dispatch.forward(request, response);
+			
+		} else if (command != null && command.equals("Info")) {
+			String user_id = request.getParameter("user_id");
+			List<MemberVO> list = dao.info(user_id);
+			request.setAttribute("memberList", list);
+			DeptDAO deptDAO = new DeptDAO();
+			List<DeptVO> deptList = deptDAO.listdept();
+			request.setAttribute("deptList", deptList);
+			RequestDispatcher dispatch = request.getRequestDispatcher("my_info.jsp");
+			dispatch.forward(request, response);
 		}
 	}
 
@@ -148,10 +158,10 @@ public class Member extends HttpServlet {
 			String user_hp2 = request.getParameter("user_hp2");
 			String user_hp3 = request.getParameter("user_hp3");
 			String sms = request.getParameter("sms");
-			
 			if (sms != "Y") {
 				sms = "N";
 			}
+			
 			String user_email1 = request.getParameter("user_email1");
 			String user_email2 = request.getParameter("user_email2");
 			String emailsts = request.getParameter("emailsts");
@@ -184,7 +194,7 @@ public class Member extends HttpServlet {
 			vo.setJibun_addr(jibun_addr);
 			vo.setRoad_addr(road_addr);
 			vo.setRest_addr(rest_addr);
-			vo.setImgFileName(imgFileName);
+//			vo.setImgFileName(imgFileName);
 
 			dao.joinMember(vo);
 			out.print("<html><body>");
@@ -212,7 +222,7 @@ public class Member extends HttpServlet {
 						String user_name = dao.getUser_name();
 						session.setAttribute("userID", user_id);
 						session.setAttribute("userName", user_name);
-						LoginImpl loginUser = new LoginImpl(user_id, user_pw);
+//						LoginImpl loginUser = new LoginImpl(user_id, user_pw);
 						/*
 						 * if(session.isNew()) { session.setAttribute("loginUser", loginUser); } int
 						 * total = LoginImpl.total_user; // p.379 request.setAttribute("totalUser",
@@ -232,7 +242,84 @@ public class Member extends HttpServlet {
 				}
 			}
 
-		} 
+		} else if (command != null && command.equals("update")) {
+			HttpSession session = request.getSession();
+			String user_id = (String)session.getAttribute("userID");
+			
+			String user_name = request.getParameter("user_name");
+			String dept_No = request.getParameter("dept_No");
+			String user_birth_y = request.getParameter("user_birth_y");
+			String user_birth_m = request.getParameter("user_birth_m");
+			String user_birth_d = request.getParameter("user_birth_d");
+			String birth_SL = request.getParameter("birth_SL");
+			String user_hp1 = request.getParameter("user_hp1");
+			String user_hp2 = request.getParameter("user_hp2");
+			String user_hp3 = request.getParameter("user_hp3");
+			String sms = request.getParameter("sms");
+			if (sms != "Y") {
+				sms = "N";
+			}
+			
+			String user_email1 = request.getParameter("user_email1");
+			String user_email2 = request.getParameter("user_email2");
+			String emailsts = request.getParameter("emailsts");
+			if (emailsts != "Y") {
+				emailsts = "N";
+			}
+			String zipcode = request.getParameter("zipcode");
+			String jibun_addr = request.getParameter("jibun_addr");
+			String road_addr = request.getParameter("road_addr");
+			String rest_addr = request.getParameter("rest_addr");
+
+			
+			MemberVO vo = new MemberVO();
+			vo.setMember_id(user_id);
+			vo.setMember_name(user_name);
+			vo.setDept_No(dept_No);
+			vo.setMember_birth_y(user_birth_y);
+			vo.setMember_birth_m(user_birth_m);
+			vo.setMember_birth_d(user_birth_d);
+			vo.setMember_birth_SL(birth_SL);
+			vo.setHP1(user_hp1);
+			vo.setHP2(user_hp2);
+			vo.setHP3(user_hp3);
+			vo.setSMS_YN(sms);
+			vo.setEmail1(user_email1);
+			vo.setEmail2(user_email2);
+			vo.setEmailsts_YN(emailsts);
+			vo.setZipcode(zipcode);
+			vo.setJibun_addr(jibun_addr);
+			vo.setRoad_addr(road_addr);
+			vo.setRest_addr(rest_addr);
+			
+			dao.update(user_id, vo);
+			out.print("<html><body>");
+			out.print("<script>alert('정보가 수정되었습니다.');"
+					+ "window.location.href='member?command=MyInfo';"
+					+ "</script>");
+			out.print("</body></html>");
+			
+		} else if (command != null && command.equals("pw_change")) {
+			HttpSession session = request.getSession();
+			String user_id = (String)session.getAttribute("userID");
+			String orgin_pw = request.getParameter("origin_pw");
+			String new_pw = request.getParameter("new_pw");
+			
+			dao.pwupdate(user_id, orgin_pw, new_pw);
+			if(dao.isPw()) {
+				out.print("<html><body>");
+				out.print("<script>"
+						+ "alert('비밀번호가 변경되었습니다.'); window.close(); opener.location.reload();" + "</script>");
+				out.print("</body></html>");
+			} else {
+				out.print("<html><body>");
+				out.print("<script>"
+						+ "alert('기존 비밀번호가 일치하지 않습니다.');"
+						+ "history.go(-1);"
+						+ "</script>");
+				out.print("</body></html>");
+			}
+		}
 	}
 	
 //	private Map<String, String> upload(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

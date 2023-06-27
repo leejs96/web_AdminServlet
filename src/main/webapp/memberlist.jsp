@@ -162,6 +162,6 @@
 	}
 	
 	function mem_update(id) {
-		window.open("http://localhost:8060/web02/change_info.jsp?user_id=" + id, "name(about:blank)", "width=700, height=900")
+		window.open("http://localhost:8060/web_AdminServlet/member?command=MyInfo&user_id=" + id, "name(about:blank)", "width=700, height=900")
 	}
 </script>

@@ -162,7 +162,7 @@
 				}
 			</script>
 		
-			<form name="info" action = "member" method=post onSubmit="return validateForm();" enctype="multipart/form-data">
+			<form name="info" action = "member" method=post onSubmit="return validateForm();">
 				<table border = 1>
 					<tr>
 						<td class = "title">아이디</td>
@@ -180,7 +180,7 @@
 					</tr>
 					<tr>
 						<td class = "title">이름</td>
-						<td colspan = "2"><input type = "text" name=user_name id=user_name value=<%=name%> disabled></td>
+						<td colspan = "2"><input type = "text" name=user_name id=user_name value=<%=name%>></td>
 					</tr>
 					<tr>
 						<td class = "title">부서명</td>
@@ -308,7 +308,7 @@
 	}
 	
 	function change_pw() {
-		window.open("http://localhost:8060/web02/Change_pw.jsp", "name(about:blank)", "width=500, height=500");
+		window.open("http://localhost:8060/web_AdminServlet/Change_pw.jsp", "name(about:blank)", "width=500, height=500");
 	}
 
 </script>
